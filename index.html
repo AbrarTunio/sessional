@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Information Security Test: Foundations and Cryptography</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FFFFFF;
+    --desk:#E6ECF1;
+    --ink:#17283A;
+    --muted:#5B6B7C;
+    --line:#C9D4DE;
+    --navy:#1F4E79;
+    --navy-soft:#DCE8F3;
+    --filled:#1F4E79;
+    --good:#1E7A55;
+    --bad:#B3392F;
+    --sans:"Public Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --serif:"Source Serif 4", Georgia, "Times New Roman", serif;
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  *,*::before,*::after{box-sizing:inherit}
+  html,body{margin:0}
+  body{background:var(--desk);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:720px;margin:0 auto;padding:20px 16px 48px}
+  .sheet{background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:24px 20px}
+  @media (min-width:600px){.sheet{padding:36px 40px}}
+  h1{font-family:var(--serif);font-weight:600;font-size:1.75rem;line-height:1.2;margin:0 0 8px}
+  h2{font-size:1.1rem;margin:28px 0 10px}
+  p{margin:0 0 12px}
+  .sub{color:var(--muted)}
+  .hidden{display:none !important}
+
+  /* Start */
+  .facts{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);border-radius:4px;margin:20px 0 24px}
+  .facts div{padding:12px;text-align:center;border-right:1px solid var(--line)}
+  .facts div:last-child{border-right:0}
+  .facts b{display:block;font-size:1.4rem;font-family:var(--serif)}
+  .facts span{font-size:.85rem;color:var(--muted)}
+  label.field{display:block;font-weight:600;margin:0 0 6px}
+  input[type=text]{width:100%;font:inherit;padding:12px 14px;border:1.5px solid var(--line);border-radius:4px;margin-bottom:16px;background:#fff;color:var(--ink)}
+  input[type=text]:focus{outline:none;border-color:var(--navy);box-shadow:0 0 0 3px var(--navy-soft)}
+  .rules{padding-left:20px;color:var(--muted);font-size:.95rem;margin:0 0 20px}
+  .rules li{margin-bottom:4px}
+  .err{color:var(--bad);font-size:.9rem;min-height:1.4em;margin-bottom:8px}
+  button{font:inherit;cursor:pointer}
+  .btn{display:inline-block;border:0;border-radius:4px;padding:12px 22px;font-weight:600;background:var(--navy);color:#fff}
+  .btn:hover{background:#163B5C}
+  .btn.ghost{background:transparent;color:var(--navy);border:1.5px solid var(--line)}
+  .btn.ghost:hover{border-color:var(--navy)}
+  .btn:disabled{opacity:.4;cursor:default}
+  .btn.block{width:100%}
+  :focus-visible{outline:3px solid #6FA3D2;outline-offset:2px}
+
+  /* Quiz */
+  .bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--desk);padding:10px 0 12px}
+  .bar-row{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-size:.9rem}
+  .who{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .count{color:var(--muted);white-space:nowrap}
+  .track{height:6px;background:#CFD9E2;border-radius:3px;margin-top:8px;overflow:hidden}
+  .track i{display:block;height:100%;width:0;background:var(--navy);transition:width .25s}
+  .qnum{font-size:.9rem;color:var(--muted);margin-bottom:6px}
+  .qtext{font-family:var(--serif);font-size:1.25rem;line-height:1.45;margin:0 0 20px}
+  .opts{display:grid;gap:10px}
+  .opt{display:flex;align-items:flex-start;gap:14px;padding:14px;border:1.5px solid var(--line);border-radius:4px;background:#fff;text-align:left;color:var(--ink);width:100%}
+  .opt:hover{border-color:#8FA9C2}
+  .bubble{flex:0 0 30px;height:30px;border-radius:50%;border:1.5px solid var(--ink);display:grid;place-items:center;font-weight:600;font-size:.85rem}
+  .opt[aria-pressed="true"]{border-color:var(--navy);background:var(--navy-soft)}
+  .opt[aria-pressed="true"] .bubble{background:var(--filled);border-color:var(--filled);color:#fff}
+  .opt span.t{padding-top:3px}
+  .nav{display:flex;justify-content:space-between;gap:10px;margin-top:22px}
+  .nav .btn{flex:1}
+
+  /* Answer sheet */
+  .omr{margin-top:22px;background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:18px 16px}
+  .omr-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px}
+  .omr-head b{font-size:1rem}
+  .omr-head span{font-size:.85rem;color:var(--muted)}
+  .grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+  @media (min-width:600px){.grid{grid-template-columns:repeat(10,1fr)}}
+  .cell{aspect-ratio:1;border-radius:50%;border:1.5px solid var(--line);background:#fff;font-size:.85rem;font-weight:600;color:var(--muted);display:grid;place-items:center;padding:0}
+  .cell.done{background:var(--filled);border-color:var(--filled);color:#fff}
+  .cell.now{box-shadow:0 0 0 3px #F2B33D}
+  .omr .btn{margin-top:16px}
+
+  /* Result */
+  .seal{border:2px solid var(--navy);border-radius:6px;padding:22px;text-align:center;margin:20px 0}
+  .score{font-family:var(--serif);font-size:4rem;font-weight:600;line-height:1;color:var(--navy)}
+  .score small{font-size:1.6rem;color:var(--muted)}
+  .pct{font-size:1.05rem;margin-top:8px;font-weight:600}
+  table{width:100%;border-collapse:collapse;font-size:.95rem}
+  th,td{text-align:left;padding:10px 4px;border-bottom:1px solid var(--line)}
+  td.r,th.r{text-align:right}
+  .locked{margin-top:20px;padding:12px 14px;background:var(--navy-soft);border-radius:4px;font-size:.92rem}
+  .rev{margin-top:10px}
+  .rev-item{padding:12px 0;border-bottom:1px solid var(--line);font-size:.93rem}
+  .rev-item .q{font-family:var(--serif);font-size:1rem;margin-bottom:4px}
+  .ok{color:var(--good)} .no{color:var(--bad)}
+
+  @media (prefers-reduced-motion:reduce){*{transition:none !important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- START SCREEN -->
+  <section id="start" class="sheet hidden">
+    <h1>Information Security Test</h1>
+    <p class="sub">Security Foundations and Cryptography Basics</p>
+    <div class="facts">
+      <div><b>30</b><span>Questions</span></div>
+      <div><b>30</b><span>Marks</span></div>
+      <div><b>1</b><span>Attempt</span></div>
+    </div>
+    <label class="field" for="name">Full name</label>
+    <input type="text" id="name" autocomplete="name" maxlength="60" placeholder="e.g. Ali Raza">
+    <label class="field" for="roll">Roll number</label>
+    <input type="text" id="roll" autocomplete="off" maxlength="30" placeholder="e.g. 22CS045">
+    <ul class="rules">
+      <li>Each question carries one mark. There is no negative marking.</li>
+      <li>You can move between questions and change answers before you submit.</li>
+      <li>You can submit only once. After submitting, this link shows your result.</li>
+      <li>Do not refresh or close the page during the test, or your answers will be lost.</li>
+    </ul>
+    <div class="err" id="startErr" role="alert"></div>
+    <button class="btn block" id="startBtn">Start test</button>
+  </section>
+
+  <!-- QUIZ SCREEN -->
+  <section id="quiz" class="hidden">
+    <div class="bar">
+      <div class="bar-row">
+        <span class="who" id="who"></span>
+        <span class="count" id="answeredCount"></span>
+      </div>
+      <div class="track"><i id="progress"></i></div>
+    </div>
+    <div class="sheet">
+      <div class="qnum" id="qnum"></div>
+      <p class="qtext" id="qtext"></p>
+      <div class="opts" id="opts"></div>
+      <div class="nav">
+        <button class="btn ghost" id="prevBtn">Previous</button>
+        <button class="btn" id="nextBtn">Next</button>
+      </div>
+    </div>
+    <div class="omr">
+      <div class="omr-head"><b>Answer sheet</b><span>Tap a number to jump</span></div>
+      <div class="grid" id="grid"></div>
+      <button class="btn block" id="submitBtn">Submit test</button>
+    </div>
+  </section>
+
+  <!-- RESULT SCREEN -->
+  <section id="result" class="sheet hidden">
+    <h1>Test result</h1>
+    <p class="sub">Information Security: Foundations and Cryptography</p>
+    <table>
+      <tr><th>Name</th><td class="r" id="rName"></td></tr>
+      <tr><th>Roll number</th><td class="r" id="rRoll"></td></tr>
+      <tr><th>Submitted</th><td class="r" id="rTime"></td></tr>
+    </table>
+    <div class="seal">
+      <div class="score" id="rScore"></div>
+      <div class="pct" id="rPct"></div>
+    </div>
+    <h2>Marks by module</h2>
+    <table id="rModules"></table>
+    <div id="reviewWrap" class="hidden">
+      <h2>Answer review</h2>
+      <div class="rev" id="review"></div>
+    </div>
+    <p class="locked">This test has been submitted from this device. It cannot be attempted again.</p>
+  </section>
+
+</div>
+
+<script>
+/* ================= SETTINGS ================= */
+const STORAGE_KEY = "is_test_foundations_crypto_v1"; // change this to open a fresh test
+const SHOW_ANSWER_REVIEW = false; // true = students see correct answers after submitting
+
+/* ================= QUESTION BANK =================
+   a = index of the correct option (0-based). Options are shuffled at runtime. */
+const M1 = "Security Foundations";
+const M2 = "Cryptography Basics";
+const BANK = [
+  // ---------- Module I: Security Foundations (13) ----------
+  {m:M1, q:"What do the three letters of the CIA triad stand for?",
+   o:["Confidentiality, Integrity, Availability","Control, Identity, Access","Confidentiality, Identification, Authentication","Cryptography, Integrity, Authorization"], a:0},
+  {m:M1, q:"A DDoS attack that floods a web server until legitimate users cannot reach it mainly violates which property?",
+   o:["Confidentiality","Integrity","Availability","Non-repudiation"], a:2},
+  {m:M1, q:"Comparing a downloaded file's hash with the hash published by the vendor checks which property?",
+   o:["Availability","Integrity","Confidentiality","Anonymity"], a:1},
+  {m:M1, q:"Which statement best describes the difference between information security and cybersecurity?",
+   o:["They are identical terms with no difference in scope","Cybersecurity covers paper records, information security covers only networks","Information security protects information in every form, including paper; cybersecurity focuses on digital and networked systems","Information security deals only with encryption"], a:2},
+  {m:M1, q:"In security terms, an asset is:",
+   o:["Any weakness in a system","Anything of value to the organisation that needs protection","A person who attacks a system","A security policy document"], a:1},
+  {m:M1, q:"A web form that does not validate user input is an example of a:",
+   o:["Threat","Vulnerability","Control","Asset"], a:1},
+  {m:M1, q:"Which of the following is a threat rather than a vulnerability?",
+   o:["An unpatched operating system","A weak default password","A criminal group targeting banks with ransomware","An open, unused network port"], a:2},
+  {m:M1, q:"Risk is most commonly described as a combination of:",
+   o:["Likelihood and impact","Encryption and hashing","Assets and policies","Firewalls and antivirus"], a:0},
+  {m:M1, q:"ISO/IEC 27001 specifies requirements for:",
+   o:["Payment card data processing","An Information Security Management System (ISMS)","Wireless network encryption","Writing secure source code in Java"], a:1},
+  {m:M1, q:"Which of these is NOT a core function of the NIST Cybersecurity Framework?",
+   o:["Identify","Protect","Encrypt","Recover"], a:2},
+  {m:M1, q:"At which OSI layer do IP addressing and routing between networks take place?",
+   o:["Layer 2: Data Link","Layer 3: Network","Layer 4: Transport","Layer 7: Application"], a:1},
+  {m:M1, q:"During encapsulation, the data unit at the Transport layer (for TCP) is called a:",
+   o:["Frame","Packet","Segment","Bit"], a:2},
+  {m:M1, q:"ARP spoofing, which tricks hosts into linking an IP address to the attacker's MAC address, operates at which OSI layer?",
+   o:["Data Link layer","Transport layer","Session layer","Presentation layer"], a:0},
+
+  // ---------- Module II: Cryptography Basics (17) ----------
+  {m:M2, q:"In cryptography, plaintext is:",
+   o:["The encrypted output of a cipher","The original readable message before encryption","The secret key","A hash value"], a:1},
+  {m:M2, q:"The unreadable output produced by an encryption algorithm is called:",
+   o:["Plaintext","Ciphertext","Keystream","Nonce"], a:1},
+  {m:M2, q:"Kerckhoffs's principle states that a cryptosystem should be secure even if:",
+   o:["The key is made public","Everything about the system except the key is public","The ciphertext is never transmitted","The algorithm is kept secret"], a:1},
+  {m:M2, q:"Kerckhoffs's principle directly argues against which practice?",
+   o:["Using long keys","Security through obscurity","Changing keys regularly","Using public algorithms such as AES"], a:1},
+  {m:M2, q:"Cryptanalysis is:",
+   o:["Designing new ciphers","Generating random keys","Studying methods to break ciphers or recover plaintext without the key","Compressing data before encryption"], a:2},
+  {m:M2, q:"How many possible keys exist for a 128-bit key?",
+   o:["128","128 × 2","2¹²⁸","128²"], a:2},
+  {m:M2, q:"What is 17 mod 5?",
+   o:["2","3","5","12"], a:0},
+  {m:M2, q:"Using the alphabet A=0 to Z=25, what is (23 + 15) mod 26?",
+   o:["8","12","14","38"], a:1},
+  {m:M2, q:"A one-way function is a function that is:",
+   o:["Easy to compute and easy to reverse","Hard to compute but easy to reverse","Easy to compute but computationally infeasible to reverse","Only usable once"], a:2},
+  {m:M2, q:"A nonce is best described as:",
+   o:["A secret key shared by two parties","A number used only once","A type of block cipher","The remainder of a modulo operation"], a:1},
+  {m:M2, q:"Including a fresh nonce in each authentication message mainly helps to prevent:",
+   o:["Replay attacks","Brute-force attacks on passwords","Physical theft of servers","Power failures"], a:0},
+  {m:M2, q:"Work factor in cryptography refers to:",
+   o:["The number of rounds in a cipher","The time and effort an attacker needs to break the system","The speed of the encryption hardware","The length of the plaintext"], a:1},
+  {m:M2, q:"The Caesar cipher is an example of a:",
+   o:["Transposition cipher","Monoalphabetic substitution cipher","Stream cipher","Public-key cipher"], a:1},
+  {m:M2, q:"Encrypt the word CAT with a Caesar cipher using a shift of 3.",
+   o:["DBU","FDW","ZXQ","FDT"], a:1},
+  {m:M2, q:"A cipher that keeps every letter of the message but rearranges their positions (such as the rail fence cipher) is a:",
+   o:["Substitution cipher","Transposition cipher","Hash function","Stream cipher"], a:1},
+  {m:M2, q:"A block cipher such as AES encrypts data:",
+   o:["One bit at a time","In fixed-size blocks (128 bits for AES)","Only as whole files","Without using a key"], a:1},
+  {m:M2, q:"Why must a stream cipher never reuse the same keystream for two messages?",
+   o:["It makes encryption slower","XORing the two ciphertexts cancels the keystream and leaks the XOR of the two plaintexts","The ciphertext becomes longer than the plaintext","The key automatically becomes public"], a:1}
+];
+
+/* ================= HELPERS ================= */
+const $ = id => document.getElementById(id);
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+function show(id){["start","quiz","result"].forEach(s=>$(s).classList.toggle("hidden", s!==id)); window.scrollTo(0,0);}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function loadResult(){try{const r=localStorage.getItem(STORAGE_KEY);return r?JSON.parse(r):null;}catch(e){return null;}}
+function storageWorks(){try{localStorage.setItem("__t","1");localStorage.removeItem("__t");return true;}catch(e){return false;}}
+
+/* ================= STATE ================= */
+let student = {name:"", roll:""};
+let paper = [];      // shuffled questions with shuffled options
+let answers = [];    // chosen option index per question, or null
+let cur = 0;
+let inProgress = false;
+
+/* ================= START ================= */
+$("startBtn").addEventListener("click", ()=>{
+  const name = $("name").value.trim().replace(/\s+/g," ");
+  const roll = $("roll").value.trim().toUpperCase();
+  if(name.length < 3){$("startErr").textContent="Enter your full name (at least 3 characters).";return;}
+  if(roll.length < 2){$("startErr").textContent="Enter your roll number.";return;}
+  if(!storageWorks()){$("startErr").textContent="This browser is blocking saved data. Open the link in a normal (not private) window of Chrome or Safari.";return;}
+  if(loadResult()){showResult(loadResult());return;}
+  student = {name, roll};
+  beginTest();
+});
+
+function beginTest(){
+  paper = shuffle(BANK).map(item=>{
+    const order = shuffle(item.o.map((_,i)=>i));
+    return {m:item.m, q:item.q, o:order.map(i=>item.o[i]), a:order.indexOf(item.a)};
+  });
+  answers = new Array(paper.length).fill(null);
+  cur = 0;
+  inProgress = true;
+  $("who").textContent = student.name + " (" + student.roll + ")";
+  buildGrid();
+  render();
+  show("quiz");
+}
+
+/* ================= QUIZ ================= */
+function buildGrid(){
+  const g = $("grid"); g.innerHTML="";
+  paper.forEach((_,i)=>{
+    const b=document.createElement("button");
+    b.className="cell"; b.textContent=i+1;
+    b.setAttribute("aria-label","Go to question "+(i+1));
+    b.addEventListener("click",()=>{cur=i;render();window.scrollTo({top:0});});
+    g.appendChild(b);
+  });
+}
+function render(){
+  const item = paper[cur];
+  $("qnum").textContent = "Question " + (cur+1) + " of " + paper.length;
+  $("qtext").textContent = item.q;
+  const box = $("opts"); box.innerHTML="";
+  item.o.forEach((txt,i)=>{
+    const b=document.createElement("button");
+    b.className="opt"; b.setAttribute("aria-pressed", answers[cur]===i ? "true":"false");
+    b.innerHTML='<span class="bubble">'+"ABCD"[i]+'</span><span class="t">'+esc(txt)+'</span>';
+    b.addEventListener("click",()=>{answers[cur]=i;render();});
+    box.appendChild(b);
+  });
+  $("prevBtn").disabled = cur===0;
+  $("nextBtn").textContent = cur===paper.length-1 ? "Review sheet" : "Next";
+  const done = answers.filter(a=>a!==null).length;
+  $("answeredCount").textContent = done + " of " + paper.length + " answered";
+  $("progress").style.width = (done/paper.length*100)+"%";
+  [...$("grid").children].forEach((c,i)=>{
+    c.classList.toggle("done", answers[i]!==null);
+    c.classList.toggle("now", i===cur);
+  });
+}
+$("prevBtn").addEventListener("click",()=>{if(cur>0){cur--;render();}});
+$("nextBtn").addEventListener("click",()=>{
+  if(cur<paper.length-1){cur++;render();window.scrollTo({top:0});}
+  else{$("submitBtn").scrollIntoView({behavior:"smooth",block:"center"});}
+});
+
+$("submitBtn").addEventListener("click",()=>{
+  const left = answers.filter(a=>a===null).length;
+  const msg = left>0
+    ? left+" question(s) are unanswered and will get zero marks.\n\nSubmit anyway? You cannot attempt the test again."
+    : "Submit your test? You cannot attempt it again.";
+  if(!confirm(msg)) return;
+  submitTest();
+});
+
+function submitTest(){
+  let score=0; const byModule={};
+  const review = paper.map((item,i)=>{
+    const correct = answers[i]===item.a;
+    if(correct) score++;
+    byModule[item.m] = byModule[item.m] || {got:0,total:0};
+    byModule[item.m].total++; if(correct) byModule[item.m].got++;
+    return {q:item.q, chosen: answers[i]===null ? null : item.o[answers[i]], right:item.o[item.a], correct};
+  });
+  const result = {
+    name:student.name, roll:student.roll, score, total:paper.length,
+    byModule, review, submittedAt:new Date().toISOString()
+  };
+  try{localStorage.setItem(STORAGE_KEY, JSON.stringify(result));}catch(e){}
+  inProgress = false;
+  showResult(result);
+}
+
+/* ================= RESULT ================= */
+function showResult(r){
+  $("rName").textContent = r.name;
+  $("rRoll").textContent = r.roll;
+  $("rTime").textContent = new Date(r.submittedAt).toLocaleString();
+  $("rScore").innerHTML = r.score + '<small> / ' + r.total + '</small>';
+  const pct = Math.round(r.score/r.total*100);
+  $("rPct").textContent = pct + "%";
+  let rows = '<tr><th>Module</th><th class="r">Marks</th></tr>';
+  [M1,M2].forEach(m=>{ if(r.byModule[m]) rows += '<tr><td>'+esc(m)+'</td><td class="r">'+r.byModule[m].got+' / '+r.byModule[m].total+'</td></tr>'; });
+  $("rModules").innerHTML = rows;
+  if(SHOW_ANSWER_REVIEW && r.review){
+    $("reviewWrap").classList.remove("hidden");
+    $("review").innerHTML = r.review.map((x,i)=>
+      '<div class="rev-item"><div class="q">'+(i+1)+'. '+esc(x.q)+'</div>'+
+      '<div class="'+(x.correct?'ok':'no')+'">Your answer: '+esc(x.chosen===null?'Not answered':x.chosen)+'</div>'+
+      (x.correct?'':'<div>Correct answer: '+esc(x.right)+'</div>')+'</div>').join("");
+  }
+  show("result");
+}
+
+/* Warn before leaving mid-test */
+window.addEventListener("beforeunload", e=>{ if(inProgress){e.preventDefault(); e.returnValue="";} });
+
+/* ================= BOOT ================= */
+const saved = loadResult();
+if(saved) showResult(saved); else show("start");
+</script>
+</body>
+</html>
